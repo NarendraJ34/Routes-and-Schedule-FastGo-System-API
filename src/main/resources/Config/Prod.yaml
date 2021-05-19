@@ -1,0 +1,9 @@
+http:
+  listner:
+     host: "localhost"
+     port: "9084"
+  request:
+     host: "localhost"
+     port: "9081"
+     Routespath: "/FastGocall/Routes"
+     Schedulespath: "/FastGocall/Schedules"

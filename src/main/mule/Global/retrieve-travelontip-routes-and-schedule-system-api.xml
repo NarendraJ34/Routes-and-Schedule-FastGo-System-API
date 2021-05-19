@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+       <flow name="retrieve-travelontip-routes-and-schedule-system-api-main">
+    <http:listener config-ref="retrieve-travelontip-routes-and-schedule-system-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="retrieve-travelontip-routes-and-schedule-system-api-config" />
+        <error-handler ref="GlobalError_HandlerError_Handler">
+        </error-handler>
+    </flow>
+    <flow name="retrieve-travelontip-routes-and-schedule-system-api-console">
+        <http:listener config-ref="retrieve-travelontip-routes-and-schedule-system-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="retrieve-travelontip-routes-and-schedule-system-api-config" />
+		<error-handler ref="GlobalError_HandlerError_Handler" />
+    </flow>
+    <sub-flow name="retrieve-travelontip-routes-and-schedule-system-apiSub_Flow" doc:id="d1f0857f-d7b3-4935-b07d-b299b451ec9a" >
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.uriParams.'transportCompany']]></ee:set-variable>
+				<ee:set-variable variableName="transcationId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.transcationId]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+	</sub-flow>
+	<flow name="get:\(transportType)\(transportCompany)\Schedules:retrieve-travelontip-routes-and-schedule-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="237ba4ab-a4c0-4a9a-9c1f-33c05bbd8f2f" name="retrieve-travelontip-routes-and-schedule-system-apiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="77dc641d-9412-4f69-af7e-3a20eaa0f49b" message="Request Received for Schedules FastGo System API For transactionId: #[vars.transcationId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="4adb755a-e471-43b4-ac59-fb93fbf1ba70" name="Schedules_for_FastGo_SystemAPISub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b62887ef-7052-4b68-ac11-2a875bbe00c1" message="Response Sent  for Schedules FastGo SystemAPI For transactionId: #[vars.transcationId]"/>
+    </flow>
+    <flow name="get:\(transportType)\(transportCompany)\routes:retrieve-travelontip-routes-and-schedule-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="d6c41763-a64c-480b-b2a9-dc5b021d8393" name="retrieve-travelontip-routes-and-schedule-system-apiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="00785d13-4a3e-4b17-8c80-e4dde25cab4d" message="Request Received for Routes FastGo System API For transactionId: #[vars.transcationId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="910451da-7afd-433e-85f0-c625698498d1" name="Routes_For__FastGo_SystemAPISub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9f6518f0-32e1-427c-bfa0-02ac42ba13cc" message="Response Sent  for Routes FastGo SystemAPI For transactionId: #[vars.transcationId]"/>
+    </flow>
+</mule>
