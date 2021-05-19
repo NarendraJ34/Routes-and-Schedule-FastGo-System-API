@@ -1,0 +1,83 @@
+#%RAML 1.0
+title: Retrieve TravelOnTip Routes and Schedule System API
+description: To retrieve  routes and schedule for Fast Go Transport provider
+
+types:
+  GetRoutes: !include /libraries/Routes/DataType/get routes200response -datatype.raml
+  GetSchedule: !include /libraries/Schedules/DataTypes/Schedule 200response dataType.raml
+  CommonError: !include /libraries/Common/DataTypes/Common error dataType.raml
+   
+uses:
+  common: /libraries/Common/commonlibrary-routesandschedules.raml
+  Get Routes: /libraries/Routes/Routes library.raml
+  Get Schedules: /libraries/Schedules/Schedules library.raml
+
+/{transportType}:
+  /{transportCompany}:
+    /routes:
+      get:
+        is:
+          - common.transcationId
+        responses:
+          200:
+            body:
+              application/json:
+                type: Get Routes.Get Routes
+                example: !include /libraries/Routes/examples/router200response.json
+          400:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/Common/examples/commonerror400.json
+          404:
+            body:
+              application/json:
+                type: CommonError 
+                example: !include /libraries/Common/examples/commonerror404.json
+                     
+          500:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/Common/examples/Commonerror500.json
+
+    /Schedules:
+      get:
+        is:
+          - common.transcationId
+          - common.departureLocationcode
+          - common.destinationlocationcode
+        responses:
+          200:
+            body:
+              application/json:
+                type: Get Schedules.Get Schedules
+                example: !include /libraries/Schedules/Examples/schedules200response.json
+                  
+          400:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/Common/examples/commonerror400.json
+                   
+          404:
+            body:
+              application/json:
+                type: CommonError  
+                example: !include /libraries/Common/examples/commonerror404.json
+          500:
+             body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/Common/examples/Commonerror500.json  
+                        
+                        
+                        
+                
+                
+
+            
+        
+                                          
+                    
+                        
